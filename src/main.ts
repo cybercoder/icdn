@@ -50,7 +50,8 @@ async function bootstrap() {
       logger,
     },
   );
-  app.setGlobalPrefix('/apis/dns.ik8s.ir');
+
+  app.setGlobalPrefix('/apis/cdn.ik8s.ir');
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
