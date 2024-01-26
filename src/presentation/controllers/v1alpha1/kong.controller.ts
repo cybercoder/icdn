@@ -42,6 +42,57 @@ export class KongController {
     return true;
   }
 
+  @Post('/namespaces/:namespace/upstreams/:id/targets')
+  async proxyTargetPost(
+    @Param() { namespace, id }: { namespace: string; id: string },
+    @Body() data,
+  ) {
+    let tags = data.tags?.filter((t: string) => !t.startsWith('ns-'));
+    tags ? tags.push(`ns-${namespace}`) : (tags = [`ns-${namespace}`]);
+    return axios
+      .post(
+        `${this.configService.getOrThrow(
+          'KONG_ADMIN_API_URI',
+        )}/upstreams/${id}/targets`,
+        {
+          ...data,
+          tags,
+        },
+      )
+      .then(({ data }) => data)
+      .catch((e) => {
+        throw new HttpException(
+          e.response.data || e.message,
+          e.response.status || 500,
+        );
+      });
+  }
+
+  @Post('/namespaces/:namespace/services/:id/routes')
+  async proxyServiceRoutePost(
+    @Param() { namespace, id }: { namespace: string; id: string },
+    @Body() data,
+  ) {
+    let tags = data.tags?.filter((t: string) => !t.startsWith('ns-'));
+    tags ? tags.push(`ns-${namespace}`) : (tags = [`ns-${namespace}`]);
+    return axios
+      .post(
+        `${this.configService.getOrThrow(
+          'KONG_ADMIN_API_URI',
+        )}/services/${id}/routes`,
+        {
+          ...data,
+          tags,
+        },
+      )
+      .then(({ data }) => data)
+      .catch((e) => {
+        throw new HttpException(
+          e.response.data || e.message,
+          e.response.status || 500,
+        );
+      });
+  }
   @Post('/namespaces/:namespace/:path')
   async proxyPost(
     @Param() { namespace, path }: { namespace: string; path: string },
