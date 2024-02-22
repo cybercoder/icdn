@@ -2,13 +2,12 @@ import {
   ForbiddenException,
   HttpException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { resolveCname, resolveTxt } from 'dns/promises';
+import { resolveTxt } from 'dns/promises';
 @Injectable()
 export class RouteUsecases {
   constructor(private readonly configService: ConfigService) {}
