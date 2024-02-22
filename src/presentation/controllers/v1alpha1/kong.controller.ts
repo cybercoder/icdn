@@ -1,3 +1,4 @@
+import { RouteUsecases } from './../../../application/usecases/route-usecases';
 import {
   Body,
   Controller,
@@ -18,7 +19,10 @@ import axios from 'axios';
 })
 @ApiTags('v1alpha1', 'proxy')
 export class KongController {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly routeUsecases: RouteUsecases,
+  ) {}
   // @Get('/:path')
   // async proxyGET(
   //   @Param() { namespace, path }: { namespace: string; path: string },
@@ -49,6 +53,7 @@ export class KongController {
   ) {
     let tags = data.tags?.filter((t: string) => !t.startsWith('ns-'));
     tags ? tags.push(`ns-${namespace}`) : (tags = [`ns-${namespace}`]);
+
     return axios
       .post(
         `${this.configService.getOrThrow(
@@ -73,10 +78,18 @@ export class KongController {
     @Param() { namespace, id }: { namespace: string; id: string },
     @Body() data,
   ) {
+    return this.routeUsecases.create({ namespace, data, id });
+  }
+
+  @Patch('/namespaces/:namespace/services/:id/routes')
+  async proxyServiceRoutePatch(
+    @Param() { namespace, id }: { namespace: string; id: string },
+    @Body() data,
+  ) {
     let tags = data.tags?.filter((t: string) => !t.startsWith('ns-'));
     tags ? tags.push(`ns-${namespace}`) : (tags = [`ns-${namespace}`]);
     return axios
-      .post(
+      .patch(
         `${this.configService.getOrThrow(
           'KONG_ADMIN_API_URI',
         )}/services/${id}/routes`,

@@ -7,6 +7,8 @@ import {
 import { ConfigModule } from '@nestjs/config';
 import { KongGetMiddlewareV1Alpha1 } from './presentation/kong-get-middleware';
 import { KongController } from './presentation/controllers/v1alpha1/kong.controller';
+import { RouteUsecases } from './application/usecases/route-usecases';
+import { dynamicImport } from './helpers/dynamic-import';
 
 const ENV = process.env.NODE_ENV;
 @Module({
@@ -17,7 +19,7 @@ const ENV = process.env.NODE_ENV;
     }),
   ],
   controllers: [KongController],
-  providers: [],
+  providers: [RouteUsecases],
 })
 export class CDNModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
